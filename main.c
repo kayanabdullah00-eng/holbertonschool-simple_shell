@@ -3,7 +3,8 @@
 
 /**
  * main - simple shell
- * Return: 0
+ *
+ * Return: Always 0
  */
 int main(void)
 {
@@ -13,7 +14,7 @@ int main(void)
 	ssize_t read;
 	pid_t pid;
 	int status;
-	char *argv[2];
+	char *argv[3];
 
 	while (1)
 	{
@@ -21,7 +22,6 @@ int main(void)
 			write(STDOUT_FILENO, "$ ", 2);
 
 		read = getline(&line, &len, stdin);
-
 		if (read == -1)
 			break;
 
@@ -29,15 +29,14 @@ int main(void)
 			line[read - 1] = '\0';
 
 		cmd = strtok(line, " \t");
-
 		if (cmd == NULL)
 			continue;
 
 		argv[0] = cmd;
-		argv[1] = NULL;
+		argv[1] = strtok(NULL, " \t");
+		argv[2] = NULL;
 
 		pid = fork();
-
 		if (pid == -1)
 		{
 			perror("fork");
@@ -55,6 +54,5 @@ int main(void)
 	}
 
 	free(line);
-
 	return (0);
 }
