@@ -3,8 +3,7 @@
 
 /**
  * main - simple shell
- *
- * Return: Always 0
+ * Return: 0
  */
 int main(void)
 {
@@ -29,7 +28,7 @@ int main(void)
 		if (read > 0 && line[read - 1] == '\n')
 			line[read - 1] = '\0';
 
-		cmd = strtok(line, " ");
+		cmd = strtok(line, " \t");
 
 		if (cmd == NULL)
 			continue;
@@ -47,13 +46,12 @@ int main(void)
 
 		if (pid == 0)
 		{
-			if (execve(argv[0], argv, environ) == -1)
-				perror(argv[0]);
-
+			execve(cmd, argv, environ);
+			perror("./hsh");
 			exit(127);
 		}
-		else
-			wait(&status);
+
+		wait(&status);
 	}
 
 	free(line);
