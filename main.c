@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <string.h>
 
 /**
  * main - simple shell
@@ -8,6 +9,7 @@
 int main(void)
 {
 	char *line = NULL;
+	char *cmd;
 	size_t len = 0;
 	ssize_t read;
 	pid_t pid;
@@ -20,19 +22,23 @@ int main(void)
 			write(STDOUT_FILENO, "$ ", 2);
 
 		read = getline(&line, &len, stdin);
+
 		if (read == -1)
 			break;
 
 		if (read > 0 && line[read - 1] == '\n')
 			line[read - 1] = '\0';
 
-		if (line[0] == '\0')
+		cmd = strtok(line, " ");
+
+		if (cmd == NULL)
 			continue;
 
-		argv[0] = line;
+		argv[0] = cmd;
 		argv[1] = NULL;
 
 		pid = fork();
+
 		if (pid == -1)
 		{
 			perror("fork");
@@ -43,6 +49,7 @@ int main(void)
 		{
 			if (execve(argv[0], argv, environ) == -1)
 				perror(argv[0]);
+
 			exit(127);
 		}
 		else
@@ -50,5 +57,6 @@ int main(void)
 	}
 
 	free(line);
+
 	return (0);
 }
