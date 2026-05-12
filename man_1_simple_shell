@@ -1,0 +1,38 @@
+.TH HSH 1 "May 2026" "Simple Shell Project"
+
+.SH NAME
+hsh \- simple UNIX command interpreter
+
+.SH SYNOPSIS
+.B ./hsh
+
+.SH DESCRIPTION
+hsh is a simple UNIX command language interpreter written in C.
+
+The shell can run commands in:
+- Interactive mode
+- Non-interactive mode
+
+It executes commands entered by the user and searches for executable files using the PATH environment variable.
+
+.SH FEATURES
+- Execute commands
+- Handle PATH
+- Interactive shell
+- Non-interactive shell
+- Basic error handling
+
+.SH COMPILATION
+gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
+
+.SH USAGE
+Run interactive mode:
+.B ./hsh
+
+Run non-interactive mode:
+.B echo "/bin/ls" | ./hsh
+
+.SH AUTHORS
+Saad Alatar
+.br
+Kayan Alanzari
