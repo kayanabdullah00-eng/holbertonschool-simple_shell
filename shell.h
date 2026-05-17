@@ -3,16 +3,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 
 extern char **environ;
 
-char **parse_line(char *line);
-char *_getenv(char *name);
-char *build_path(char *dir, char *command);
-char *find_path(char *command);
-int execute_cmd(char **args, char *program, int count);
+/* main.c */
+int main(void);
 
-#endif
+/* execute.c */
+int execute(char **args);
+
+/* path.c */
+char *find_in_path(char *cmd);
+char *_getenv(char *name);
+
+#endif /* SHELL_H */

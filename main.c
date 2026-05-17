@@ -1,58 +1,73 @@
 #include "shell.h"
-#include <string.h>
 
 /**
- * main - simple shell
+ * tokenize - splits a string into tokens
+ * @line: the input line
  *
- * Return: Always 0
+ * Return: array of strings, or NULL on failure
+ */
+char **tokenize(char *line)
+{
+	char **args;
+	char *token;
+	int i;
+
+	i = 0;
+	args = malloc(sizeof(char *) * 64);
+	if (!args)
+		return (NULL);
+	token = strtok(line, " \t\n");
+	while (token != NULL)
+	{
+		args[i] = token;
+		i++;
+		token = strtok(NULL, " \t\n");
+	}
+	args[i] = NULL;
+	return (args);
+}
+
+/**
+ * main - entry point for simple shell
+ *
+ * Return: 0 on success
  */
 int main(void)
 {
-	char *line = NULL;
-	char *cmd;
-	size_t len = 0;
-	ssize_t read;
-	pid_t pid;
-	int status;
-	char *argv[3];
+	char *line;
+	size_t len;
+	ssize_t nread;
+	char **args;
 
+	line = NULL;
+	len = 0;
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "$ ", 2);
-
-		read = getline(&line, &len, stdin);
-		if (read == -1)
-			break;
-
-		if (read > 0 && line[read - 1] == '\n')
-			line[read - 1] = '\0';
-
-		cmd = strtok(line, " \t");
-		if (cmd == NULL)
-			continue;
-
-		argv[0] = cmd;
-		argv[1] = strtok(NULL, " \t");
-		argv[2] = NULL;
-
-		pid = fork();
-		if (pid == -1)
+			write(STDOUT_FILENO, "($) ", 4);
+		nread = getline(&line, &len, stdin);
+		if (nread == -1)
 		{
-			perror("fork");
+			if (isatty(STDIN_FILENO))
+				write(STDOUT_FILENO, "\n", 1);
+			free(line);
+			exit(0);
+		}
+		args = tokenize(line);
+		if (args == NULL || args[0] == NULL)
+		{
+			free(args);
 			continue;
 		}
-
-		if (pid == 0)
+		if (strcmp(args[0], "exit") == 0)
 		{
-			execve(cmd, argv, environ);
-			perror("./hsh");
-			exit(127);
+			free(args);
+			free(line);
+			exit(0);
 		}
-
-		wait(&status);
+		execute(args);
+		free(args);
 	}
-
 	free(line);
 	return (0);
 }

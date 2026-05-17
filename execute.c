@@ -1,43 +1,43 @@
 #include "shell.h"
 
 /**
- * execute_cmd - Executes a command
- * @args: Command arguments
- * @program: Program name
- * @count: Command count
+ * execute - forks and executes a command
+ * @args: array of arguments, NULL-terminated
  *
  * Return: 0 on success, -1 on failure
  */
-int execute_cmd(char **args, char *program, int count)
+int execute(char **args)
 {
 	pid_t pid;
 	int status;
-	char *cmd_path;
+	char *cmd;
 
-	cmd_path = find_path(args[0]);
-	if (cmd_path == NULL)
+	cmd = find_in_path(args[0]);
+	if (cmd == NULL)
 	{
-		fprintf(stderr, "%s: %d: %s: not found\n", program, count, args[0]);
+		fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
 		return (-1);
 	}
-
 	pid = fork();
 	if (pid == -1)
 	{
-		free(cmd_path);
+		perror("fork");
+		free(cmd);
 		return (-1);
 	}
-
 	if (pid == 0)
 	{
-		if (execve(cmd_path, args, environ) == -1)
+		if (execve(cmd, args, environ) == -1)
 		{
-			free(cmd_path);
-			exit(127);
+			perror("execve");
+			free(cmd);
+			exit(1);
 		}
 	}
-
-	wait(&status);
-	free(cmd_path);
+	else
+	{
+		wait(&status);
+	}
+	free(cmd);
 	return (0);
 }
