@@ -11,13 +11,8 @@
 
 extern char **environ;
 
-/* main.c */
-int main(void);
-
-/* execute.c */
-int execute(char **args);
-
-/* path.c */
+char **tokenize(char *line);
+int execute(char **args, char *prog);
 char *find_in_path(char *cmd);
 char *_getenv(char *name);
 

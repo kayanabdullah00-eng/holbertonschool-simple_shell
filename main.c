@@ -29,16 +29,19 @@ char **tokenize(char *line)
 
 /**
  * main - entry point for simple shell
+ * @argc: argument count
+ * @argv: argument vector
  *
  * Return: 0 on success
  */
-int main(void)
+int main(int argc, char **argv)
 {
 	char *line;
 	size_t len;
 	ssize_t nread;
 	char **args;
 
+	(void)argc;
 	line = NULL;
 	len = 0;
 	while (1)
@@ -65,7 +68,7 @@ int main(void)
 			free(line);
 			exit(0);
 		}
-		execute(args);
+		execute(args, argv[0]);
 		free(args);
 	}
 	free(line);

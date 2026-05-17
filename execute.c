@@ -3,10 +3,11 @@
 /**
  * execute - forks and executes a command
  * @args: array of arguments, NULL-terminated
+ * @prog: name of the program (argv[0])
  *
  * Return: 0 on success, -1 on failure
  */
-int execute(char **args)
+int execute(char **args, char *prog)
 {
 	pid_t pid;
 	int status;
@@ -15,7 +16,7 @@ int execute(char **args)
 	cmd = find_in_path(args[0]);
 	if (cmd == NULL)
 	{
-		fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
+		fprintf(stderr, "%s: 1: %s: not found\n", prog, args[0]);
 		return (-1);
 	}
 	pid = fork();
