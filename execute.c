@@ -5,7 +5,7 @@
  * @args: array of arguments, NULL-terminated
  * @prog: name of the program (argv[0])
  *
- * Return: 0 on success, -1 on failure
+ * Return: exit status of command
  */
 int execute(char **args, char *prog)
 {
@@ -17,14 +17,14 @@ int execute(char **args, char *prog)
 	if (cmd == NULL)
 	{
 		fprintf(stderr, "%s: 1: %s: not found\n", prog, args[0]);
-		return (-1);
+		return (127);
 	}
 	pid = fork();
 	if (pid == -1)
 	{
 		perror("fork");
 		free(cmd);
-		return (-1);
+		return (1);
 	}
 	if (pid == 0)
 	{
@@ -37,8 +37,10 @@ int execute(char **args, char *prog)
 	}
 	else
 	{
-		wait(&status);
+		waitpid(pid, &status, 0);
+		free(cmd);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
 	}
-	free(cmd);
 	return (0);
 }

@@ -28,6 +28,22 @@ char **tokenize(char *line)
 }
 
 /**
+ * print_env - prints the current environment
+ *
+ * Return: void
+ */
+void print_env(void)
+{
+	int i;
+
+	for (i = 0; environ[i]; i++)
+	{
+		write(STDOUT_FILENO, environ[i], strlen(environ[i]));
+		write(STDOUT_FILENO, "\n", 1);
+	}
+}
+
+/**
  * main - entry point for simple shell
  * @argc: argument count
  * @argv: argument vector
@@ -40,10 +56,12 @@ int main(int argc, char **argv)
 	size_t len;
 	ssize_t nread;
 	char **args;
+	int last_status;
 
 	(void)argc;
 	line = NULL;
 	len = 0;
+	last_status = 0;
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
@@ -54,7 +72,7 @@ int main(int argc, char **argv)
 			if (isatty(STDIN_FILENO))
 				write(STDOUT_FILENO, "\n", 1);
 			free(line);
-			exit(0);
+			exit(last_status);
 		}
 		args = tokenize(line);
 		if (args == NULL || args[0] == NULL)
@@ -66,9 +84,15 @@ int main(int argc, char **argv)
 		{
 			free(args);
 			free(line);
-			exit(0);
+			exit(last_status);
 		}
-		execute(args, argv[0]);
+		if (strcmp(args[0], "env") == 0)
+		{
+			print_env();
+			free(args);
+			continue;
+		}
+		last_status = execute(args, argv[0]);
 		free(args);
 	}
 	free(line);
